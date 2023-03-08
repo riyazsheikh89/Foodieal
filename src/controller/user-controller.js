@@ -25,3 +25,26 @@ export const signup = async (req, res) => {
         });
     }
 }
+
+
+export const signin = async (req, res) => {
+    try {
+        const jwt = await userService.signIn({
+            email: req.body.email, 
+            password: req.body.password
+        });
+        return res.status(201).json({
+            success: true,
+            data: jwt,
+            message: 'Successfully sign-in!',
+            err: {}
+        }); 
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            data: {},
+            message: "Failed to sign in!",
+            err: error
+        });
+    }
+}
