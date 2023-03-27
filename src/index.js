@@ -1,9 +1,9 @@
 import express from 'express';
 
 import connect from './config/db-config.js';
+import { PORT } from './config/env-variables.js';
 import apiRoutes from './routes/index.js';
 
-const PORT = process.env.PORT;
 
 const app =  express();
 

@@ -1,10 +1,8 @@
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import {MONGODB_URL} from '../config/env-variables.js';
 
 const connect= async () => {
-    mongoose.connect('mongodb://localhost/Foodieal');
+    mongoose.connect(MONGODB_URL);
     const db = mongoose.connection;
 
     db.on('error', console.error.bind(console, "error connecting to db!"));
