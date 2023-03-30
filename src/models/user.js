@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         require: true,
     }
-});
+}, ({timestamps: true}));
 
 
 // storing the plain password in the encrypted form

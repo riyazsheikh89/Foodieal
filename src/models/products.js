@@ -23,7 +23,7 @@ const productSchema = new mongoose.Schema({
     urls: [
         {type: String}
     ]
-});
+}, ({timestamps: true}));
 
 const Products = mongoose.model('Products', productSchema);
 
