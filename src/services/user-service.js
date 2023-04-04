@@ -17,7 +17,7 @@ class UserService {
 
     async login(data) {
         try {
-            const user = await this.userRepository.findBy({email: data.email});
+            const user = await this.userRepository.findByEmailWithPassword({email: data.email});
             if (!user) {
                 throw {message: "No user found with this email!"}
             }

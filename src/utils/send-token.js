@@ -8,7 +8,7 @@ export const sendToken = async (user, res) => {
         }
         res.status(201).cookie("token", jwt, ops).json({
             success: true,
-            data: jwt,
+            token: jwt,
             user,
             err: {}
         });

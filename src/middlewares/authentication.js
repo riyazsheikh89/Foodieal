@@ -1,20 +1,22 @@
-import passport from "passport";
+// import passport from "passport";
+// import ErrorHandler from "../utils/error-handler.js";
+// const catchAsyncErrors = require("./catchAsyncErrors");
+import jwt from "jsonwebtoken";
+import User from "../models/user.js";
 
-export const authenticate = (req, res, next) => {
+export const authenticate = async (req, res, next) => {
     try {
-        passport.authenticate('jwt', (err, user) => {
-            if (err)
-                next(err);
-            
-            if (!user) {
-                return res.status(401).json({
-                    message: 'Unauthorised token access!'
-                })
-            }
-            req.user = user;
-            next();
-        }) (req, res, next);
+        const { token } = req.cookies;
+        if (!token) {
+            return res.status(401).json({
+                message: 'Unauthorised token access!'
+            });
+        }
+        const decodedData = jwt.verify(token, process.env.JWT_KEY);
+
+        req.user = await User.findById(decodedData.id);
+        next();
     } catch (error) {
-        console.log(error);
-    }
+        next(error);
+    } 
 }
