@@ -1,5 +1,7 @@
 import UserService from "../services/user-service.js";
 
+import { sendToken } from '../utils/send-token.js'
+
 const userService = new UserService();
 
 export const signup = async (req, res) => {
@@ -33,12 +35,9 @@ export const signin = async (req, res) => {
             email: req.body.email, 
             password: req.body.password
         });
-        return res.status(201).json({
-            success: true,
-            data: jwt,
-            message: 'Successfully sign-in!',
-            err: {}
-        }); 
+        // send the token inside a cookie
+        sendToken(jwt, res);
+        
     } catch (error) {
         return res.status(500).json({
             success: false,

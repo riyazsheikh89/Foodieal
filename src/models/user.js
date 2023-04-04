@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import validator from 'validator';
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -10,11 +11,19 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         unique: true,
-        required: true
+        required: true,
+        validate: [validator.isEmail, "Please Enter a valid Email"],
     },
     password: {
         type: String,
         require: true,
+    },
+    avatar: {
+        image: {type: String}
+    },
+    role: {
+        type: String,
+        default: 'user'
     }
 }, ({timestamps: true}));
 
@@ -35,7 +44,7 @@ userSchema.methods.comparePassword = function compare(password) {
     return response;
 }
 
-
+// generate JWT token for authentiication
 userSchema.methods.generateJWT = function generate() {
     const token = jwt.sign({id: this._id, email: this.email}, process.env.JWT_KEY, {expiresIn: '1d'});
     return token;
