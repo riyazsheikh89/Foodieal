@@ -12,12 +12,8 @@ export const signup = async (req, res) => {
             password: req.body.password
         }
         const user = await userService.signUp(payLoad);
-        return res.status(201).json({
-            success: true,
-            data: user,
-            message: 'Successfully sign-up!',
-            err: {}
-        }); 
+        // after user creation, send the token inside a cookie
+        sendToken(user, res); 
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -29,14 +25,14 @@ export const signup = async (req, res) => {
 }
 
 
-export const signin = async (req, res) => {
+export const login = async (req, res) => {
     try {
-        const jwt = await userService.signIn({
+        const user = await userService.login({
             email: req.body.email, 
             password: req.body.password
         });
         // send the token inside a cookie
-        sendToken(jwt, res);
+        sendToken(user, res);
         
     } catch (error) {
         return res.status(500).json({

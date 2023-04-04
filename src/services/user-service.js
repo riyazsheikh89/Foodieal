@@ -15,7 +15,7 @@ class UserService {
     }
 
 
-    async signIn(data) {
+    async login(data) {
         try {
             const user = await this.userRepository.findBy({email: data.email});
             if (!user) {
@@ -25,9 +25,8 @@ class UserService {
             if(!user.comparePassword(data.password)) {
                 throw {message: "Oops! incorrect password"}
             }
-            
-            const token = user.generateJWT();
-            return token;
+            // send the user back, if everything is correct
+            return user;
         } catch (error) {
             throw error;
         }
