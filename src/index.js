@@ -1,5 +1,7 @@
 import express from 'express';
+import passport from 'passport';
 
+import { passportAuth } from './config/passport-jwt-strategy.js';
 import connect from './config/db-config.js';
 import { PORT } from './config/env-variables.js';
 import apiRoutes from './routes/index.js';
@@ -9,6 +11,9 @@ const app =  express();
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+
+app.use(passport.initialize());
+passportAuth(passport);
 
 app.use('/api', apiRoutes);
 

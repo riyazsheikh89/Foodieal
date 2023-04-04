@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const PORT = process.env.PORT;
+export const JWT_KEY = process.env.JWT_KEY;
 export const MONGODB_URL = process.env.MONGODB_URL;
 export const AWS_BUCKET_NAME = process.env.AWS_BUCKET_NAME;
 export const AWS_BUCKET_REGION = process.env.AWS_BUCKET_REGION;
