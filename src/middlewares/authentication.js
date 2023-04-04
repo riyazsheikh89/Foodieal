@@ -1,6 +1,3 @@
-// import passport from "passport";
-// import ErrorHandler from "../utils/error-handler.js";
-// const catchAsyncErrors = require("./catchAsyncErrors");
 import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 
