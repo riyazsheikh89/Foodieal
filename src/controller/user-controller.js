@@ -57,3 +57,30 @@ export const login = async (req, res) => {
         });
     }
 }
+
+
+export const getUser = async (req, res) => {
+    try {
+        const user = await userService.getById(req.user.id);
+        if (!user) {
+            throw ("Oops! User not found");
+        }
+        const {_id, name, email, role} = user;
+        
+        const imageUrl = await getObjectSignedUrl(user.avatar.image);
+        return res.status(200).json({
+            success: true,
+            message: "Successful fetched the user",
+            user: {_id, name, email, role},
+            avatarUrl: imageUrl,
+            err: {}
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            data: {},
+            message: "Something went wrong at fetching the user",
+            err: error
+        });
+    }
+}

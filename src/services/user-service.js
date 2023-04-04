@@ -31,6 +31,15 @@ class UserService {
             throw error;
         }
     }
+
+    async getById(data) {
+        try {
+            const user = await this.userRepository.get(data);
+            return user;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 
