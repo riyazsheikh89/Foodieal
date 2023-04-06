@@ -1,16 +1,9 @@
 import multer from "multer";
-import crypto from 'crypto';
 
 import ProductsRepository from "../repository/products-repository.js";
-import { uploadFile, getObjectSignedUrl, deleteFile } from '../config/s3_file_upload-config.js';
-
-// crypto -> generates random string, using it for unique file name
-const generateFileName = (bytes = 16) => crypto.randomBytes(bytes).toString('hex')
-
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
-// it will upload file to the Memory temporary
-const multipleUploader = upload.array('images', 3);
+import { multipleUploader } from '../config/multer-config.js';
+import { AWS_BUCKET_NAME } from '../config/env-variables.js';
+import { s3 } from "../config/s3_file_upload-config.js";
 
 
 const productsService = new ProductsRepository();
@@ -19,34 +12,16 @@ const productsService = new ProductsRepository();
 export const createProduct = async (req, res) => {
     try {
         multipleUploader(req, res, async ()=> {
-
-            // UPLOADING files to S3 Bucket
-            const response = req.files;
-            const images = [];
-            response.forEach(async (files) => {
-              const imageName = generateFileName();
-              images.push(imageName);
-              const fileBuffer = files.buffer;
-              await uploadFile(fileBuffer, imageName, files.mimetype);
-            });
-
             // create the prdoct
-            const productData = {
-                name: req.body.name,
-                price: req.body.price,
-                category: req.body.category,
-                description: req.body.description,
-            }
-            const product = await productsService.create(productData);
+            const {name, price, category, description} = req.body;
+            const product = await productsService.create({name, price, category, description});
 
-            // generating signedURLs for files, and storing it on Database
-            // also storing the images name in the database for further usage
-            const imagesUrl = await createImageUrl(images);
-            images.forEach((imageName, index) => {
-                const url = imagesUrl[index];
-                product.images.push(imageName);
-                product.urls.push(url);
-              });
+            // store the each image name and url
+            const response = req.files; // array of uploaded files
+            response.forEach( element => {
+                product.images.push(element.key);
+                product.urls.push(element.location);
+            });
             product.save();
 
             return res.status(201).json({
@@ -64,16 +39,6 @@ export const createProduct = async (req, res) => {
             err: error
         });
     }
-}
-
-// generates signedUrl for images uploaded on S3
-async function createImageUrl(files) {
-    const imagesURL = [];
-    for (let file of files) {
-        const url = await getObjectSignedUrl(file);
-        imagesURL.push(url);
-    }
-    return imagesURL;
 }
 
 
@@ -144,11 +109,11 @@ export const getByCategory = async (req, res) => {
 export const deleteProduct = async (req, res) => {
     try {
         // find the product by id, and delete the images from S3 bucket
-        // then delete the product from Database
         const product = await productsService.get(req.body.id);
         for (let image of product.images) {
-            await deleteFile(image);
+            await s3.deleteObject({Bucket: AWS_BUCKET_NAME, Key: image}).promise();
         }
+        // Delete the product from Database
         const response = await productsService.destroy(req.body.id);
 
         return res.status(201).json({

@@ -20,7 +20,8 @@ const userSchema = new mongoose.Schema({
         select: false
     },
     avatar: {
-        image: {type: String}
+        url: {type: String},
+        key: {type: String}
     },
     role: {
         type: String,

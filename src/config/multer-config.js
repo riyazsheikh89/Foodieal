@@ -1,7 +1,4 @@
-import multer from "multer";
-
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+import { upload } from './s3_file_upload-config.js';
 
 // for single file upload
 export const singleUploader = upload.single('avatar');

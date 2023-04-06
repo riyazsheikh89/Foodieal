@@ -1,30 +1,26 @@
 import UserService from "../services/user-service.js";
-import crypto from 'crypto';
 
 import { sendToken } from '../utils/send-token.js';
-import { uploadFile, getObjectSignedUrl } from '../config/s3_file_upload-config.js';
-import { singleUploader } from '../config/multer-config.js';
-
-// crypto -> generates random string, using it for unique file name
-const generateFileName = (bytes = 16) => crypto.randomBytes(bytes).toString('hex');
+import { singleUploader } from "../config/multer-config.js";
 
 
 const userService = new UserService();
 
 export const signup = async (req, res) => {
     try {
-        singleUploader(req, res, async() => {
-            const imageName = generateFileName();
-            const payLoad = {
-                name: req.body.name,
-                email: req.body.email,
-                password: req.body.password,
-                avatar: {
-                    image: imageName
-                }
+        singleUploader(req, res, async(err) => {
+            if (err) {
+                return res.status(500).json({error: err});
             }
-            await uploadFile(req.file.buffer, imageName, req.file.mimetype);
-            const user = await userService.signUp(payLoad);
+            const {name, email, password} = req.body;
+            const user = await userService.signUp({name, email, password});
+            
+            if (req.file) { // check wheather req contains any image or not
+                user.avatar.url = req.file.location;
+                user.avatar.key = req.file.key;
+                user.save();
+            }
+
             // after user creation, send the token inside a cookie
             sendToken(user, res);
         });
