@@ -10,7 +10,7 @@ export const authenticate = async (req, res, next) => {
             });
         }
         const decodedData = jwt.verify(token, process.env.JWT_KEY);
-
+        //attach the user to the 'res' object for using the user details inside next() middleware
         req.user = await User.findById(decodedData.id);
         next();
     } catch (error) {
