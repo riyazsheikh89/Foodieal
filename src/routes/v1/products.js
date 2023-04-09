@@ -8,14 +8,17 @@ import {
     deleteProduct 
 } from '../../controller/products-controller.js';
 import { authenticate } from '../../middlewares/authentication.js';
+import { authorization } from '../../middlewares/authorization.js';
 
 const router = express.Router();
 
-router.post('/createProduct', createProduct);
-router.get('/product/:id', getProduct);
-router.get('/products', getAllProducts);
-router.get('/category', getByCategory);
-router.delete('/delete', deleteProduct);
+// these tasks can be performed by the 'admin' role only
+router.post('/createProduct',authenticate,authorization, createProduct);    // create a product
+router.delete('/delete',authenticate,authorization, deleteProduct);         // delete a product
+
+router.get('/product/:id', getProduct);     // get a particular product by it's id
+router.get('/products', getAllProducts);    // get all products from DB
+router.get('/category', getByCategory);     // get products by a category
 
 
 export default router;
