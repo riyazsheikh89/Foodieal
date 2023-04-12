@@ -32,7 +32,7 @@ class UserService {
         }
     }
 
-    async getById(data) {
+    async getUser(data) {
         try {
             const user = await this.userRepository.get(data);
             return user;

@@ -1,15 +1,16 @@
 import nodemailer from "nodemailer";
+import { HOST, SMTP_PORT, HOST_EMAIL_ID, EMAIL_APP_PASS } from './env-variables.js';
 
 export const sendMail = async (data) => {
   try {
     // Create a transporter
     const transporter = nodemailer.createTransport({
-      host: process.env.HOST,
-      port: process.env.SMTP_PORT,
+      host: HOST,
+      port: SMTP_PORT,
       secure: true,
       auth: {
-        user: process.env.HOST_EMAIL_ID,
-        pass: process.env.EMAIL_APP_PASS,
+        user: HOST_EMAIL_ID,
+        pass: EMAIL_APP_PASS,
       },
     });
 

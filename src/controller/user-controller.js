@@ -5,7 +5,6 @@ import { sendToken } from '../utils/send-token.js';
 import { singleUploader } from "../config/multer-config.js";
 import { sendMail } from "../config/email-config.js";
 
-const userRepo = new UserRepository();
 const userService = new UserService();
 
 export const signup = async (req, res) => {
@@ -68,21 +67,19 @@ export const logout = async (req, res) => {
 }
 
 
-export const getUser = async (req, res) => {
+export const myProfile = async (req, res) => {
     try {
-        const user = await userService.getById(req.user.id);
+        const user = await userService.getUser(req.user.id);
         if (!user) {
             throw ("Oops! User not found");
         }
-        const {_id, name, email, role} = user;
+        const {_id, name, email, role, avatar} = user;
         
-        const imageUrl = await getObjectSignedUrl(user.avatar.image);
-        return res.status(200).json({
+        return res.status(201).json({
             success: true,
-            message: "Successful fetched the user",
-            user: {_id, name, email, role},
-            avatarUrl: imageUrl,
-            err: {}
+            message: "Successful fetched user profile",
+            err: {},
+            data: {_id, name, email, role, avatar},
         });
     } catch (error) {
         return res.status(500).json({
