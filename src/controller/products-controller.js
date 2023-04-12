@@ -87,7 +87,7 @@ export const getProduct = async (req, res) => {
 // get products by Category
 export const getByCategory = async (req, res) => {
     try {
-        const product = await productsService.getByCategory(req.body.category);
+        const product = await productsService.getByCategory(req.query.category);
         return res.status(201).json({
             success: true,
             message: 'successfuly fetched the products',
