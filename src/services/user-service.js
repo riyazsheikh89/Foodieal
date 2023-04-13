@@ -33,10 +33,21 @@ class UserService {
         }
     }
 
+    // get a particular user
     async getUser(data) {
         try {
             const user = await this.userRepository.get(data);
             return user;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // get all users
+    async getUsers(filter) {
+        try {
+            const users = await this.userRepository.getAll(filter);
+            return users;
         } catch (error) {
             throw error;
         }

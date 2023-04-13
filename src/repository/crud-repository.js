@@ -23,9 +23,10 @@ class CrudRepository {
         }
     }
 
-    async getAll() {
+    // filter might be an empty object like: {}, it will fetch all the documents from a collection
+    async getAll(filter) {
         try {
-            const response = await this.model.find({});
+            const response = await this.model.find(filter);
             return response;
         } catch (error) {
             console.log('Oops! Something went wrong at CRUD repo');

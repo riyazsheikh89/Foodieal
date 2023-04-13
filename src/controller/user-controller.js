@@ -198,3 +198,47 @@ export const updateAvatar = async (req, res) => {
         });
     }
 }
+
+
+// Get All Users - (ADMIN only)
+export const getAllUsers = async (req, res) => {
+    try {
+        const users = await userService.getUsers({role: 'user'});
+        return res.status(201).json({
+            success: true,
+            message: 'Successfully fetched all the users',
+            err: {},
+            data: users,
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to fetched the users',
+            data: {},
+            err: error
+        })
+    }
+}
+
+
+// Update User Roles - (ADMIN only)
+export const updateUserRole = async (req, res) => {
+    try {
+        const user = await userService.getUser(req.body.id);
+        user.role = 'admin';
+        await user.save();
+        return res.status(201).json({
+            success: true,
+            message: 'Successfully updated user role',
+            err: {},
+            data: user,
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to updated user role',
+            data: {},
+            err: error,
+        })
+    }
+}
