@@ -1,7 +1,6 @@
-import multer from "multer";
 
 import ProductsRepository from "../repository/products-repository.js";
-import { multipleUploader } from '../config/multer-config.js';
+import { multipleUploader } from '../utils/s3-operations.js';
 import { AWS_BUCKET_NAME } from '../config/env-variables.js';
 import { s3 } from "../config/s3_file_upload-config.js";
 
