@@ -1,8 +1,7 @@
 import UserService from "../services/user-service.js";
-import UserRepository from '../repository/user-repository.js'
 
 import { sendToken } from '../utils/send-token.js';
-import { singleUploader } from "../config/multer-config.js";
+import { singleUploader, deleteFile } from '../utils/s3-operations.js'
 import { sendMail } from "../config/email-config.js";
 
 const userService = new UserService();
@@ -151,7 +150,6 @@ export const updatePassword = async (req, res) => {
         if (req.body.newPassword != req.body.newConfirmPassword) {
             return res.status(400).send({err: 'Please match the new password'});
         }
-        console.log(req.user.id, req.body.oldPassword, req.body.newPassword);
         const user = await userService.updatePassword(req.user.id, req.body.oldPassword, req.body.newPassword);
         // when a user update their password, we must send a new token back to the client side
         sendToken(user, res, 'successfully updated password');
@@ -160,6 +158,42 @@ export const updatePassword = async (req, res) => {
             success: false,
             data: {},
             message: "Failed to update the password",
+            err: error
+        });
+    }
+}
+
+
+// Update User Profile
+export const updateAvatar = async (req, res) => {
+    try {
+        singleUploader(req, res, async(err) => {
+            if (err) {
+                throw err
+            }
+            const user = await userService.getUser(req.user.id);
+            // if user already has profile pic, then delete that from S3 bucket
+            const prevAvatar = user.avatar.key;
+            if (prevAvatar) {
+              await deleteFile(prevAvatar);
+            }
+
+            user.avatar.key = req.file.key;
+            user.avatar.url = req.file.location;
+            await user.save();
+
+            return res.status(201).json({
+                success: true,
+                message: 'Successfully updated profile picture',
+                data: user,
+                err: {}
+            });
+        });
+    } catch (error) {
+        return res.status(201).json({
+            success: true,
+            message: 'Something went wrong while updating profile picture',
+            data: {},
             err: error
         });
     }
