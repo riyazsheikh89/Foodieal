@@ -34,20 +34,20 @@ const userSchema = new mongoose.Schema({
 
 
 // storing the plain password in the encrypted form
-userSchema.pre('save', function(next) {
+userSchema.pre('save',async function(next) {
     if (!this.isModified("password")) {
         next();
     }
-    const SALT = bcrypt.genSaltSync(9);
-    const hash = bcrypt.hashSync(this.password, SALT);
+    const SALT = await bcrypt.genSalt(9);
+    const hash = await bcrypt.hash(this.password, SALT);
     this.password = hash;
     next();
 });
 
 
 // compare the plain password with the encrypted password
-userSchema.methods.comparePassword = function compare(password) {
-    const response = bcrypt.compareSync(password, this.password);
+userSchema.methods.comparePassword = async function compare(password) {
+    const response = bcrypt.compare(password, this.password);
     return response;
 }
 

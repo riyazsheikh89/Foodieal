@@ -19,11 +19,11 @@ export const signup = async (req, res) => {
             if (req.file) { // check wheather req contains any image or not
                 user.avatar.url = req.file.location;
                 user.avatar.key = req.file.key;
-                user.save();
+                await user.save();
             }
 
             // after user creation, send the token inside a cookie
-            sendToken(user, res);
+            sendToken(user, res, "User registration successfull");
         });
     } catch (error) {
         return res.status(500).json({
@@ -43,7 +43,7 @@ export const login = async (req, res) => {
             password: req.body.password
         });
         // send the token inside a cookie
-        sendToken(user, res);
+        sendToken(user, res, "Successfully logged in");
         
     } catch (error) {
         return res.status(500).json({
@@ -132,13 +132,34 @@ export const resetPassword = async (req, res) => {
             passwordResetToken: req.params.token,
             resetTokenExpiry: { $gt: Date.now()}
         }
-        const user = await userService.updatePassword(payLoad, req.body.password);
+        const user = await userService.changePassword(payLoad, req.body.password);
         sendToken(user, res);
     } catch (error) {
         return res.status(500).json({
             success: false,
             data: {},
             message: "Failed to reset the password",
+            err: error
+        });
+    }
+}
+
+
+// Update password only
+export const updatePassword = async (req, res) => {
+    try {
+        if (req.body.newPassword != req.body.newConfirmPassword) {
+            return res.status(400).send({err: 'Please match the new password'});
+        }
+        console.log(req.user.id, req.body.oldPassword, req.body.newPassword);
+        const user = await userService.updatePassword(req.user.id, req.body.oldPassword, req.body.newPassword);
+        // when a user update their password, we must send a new token back to the client side
+        sendToken(user, res, 'successfully updated password');
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            data: {},
+            message: "Failed to update the password",
             err: error
         });
     }

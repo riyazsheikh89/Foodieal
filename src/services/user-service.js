@@ -22,7 +22,8 @@ class UserService {
                 throw {message: "No user found with this email!"}
             }
 
-            if(!user.comparePassword(data.password)) {
+            const response = await user.comparePassword(data.password);
+            if(!response) {
                 throw {message: "Oops! incorrect password"}
             }
             // send the user back, if everything is correct
@@ -58,8 +59,8 @@ class UserService {
         }
     }
 
-    //update password
-    async updatePassword(payLoad, password) {
+    // Change the password for reset link
+    async changePassword(payLoad, password) {
         try {
           const user = await this.userRepository.findBy(payLoad);
           if (!user) {
@@ -73,6 +74,22 @@ class UserService {
           await user.save();
           // return the user for sending login token
           return user;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Update password
+    async updatePassword(data, oldPassword, newPassword) {
+        try {
+            const user = await this.userRepository.findByIdWithPassword(data);
+            const response = await user.comparePassword(oldPassword);
+            if (!response) {
+                throw ('Old password is incorrect! please enter the correct password');
+            }
+            user.password = newPassword;
+            await user.save();
+            return user;
         } catch (error) {
             throw error;
         }

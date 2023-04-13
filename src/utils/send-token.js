@@ -1,4 +1,4 @@
-export const sendToken = async (user, res) => {
+export const sendToken = async (user, res, message) => {
     try {
         const jwt = user.generateJWT();
         // options describe about the token
@@ -9,6 +9,7 @@ export const sendToken = async (user, res) => {
         const {_id, name, email, role, avatar} = user;
         res.status(201).cookie("token", jwt, ops).json({
             success: true,
+            message: message,
             token: jwt,
             user: {_id, name, email, role, avatar},
             err: {}
