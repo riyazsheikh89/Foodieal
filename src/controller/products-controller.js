@@ -1,11 +1,8 @@
-
-import ProductsRepository from "../repository/products-repository.js";
-import { multipleUploader } from '../utils/s3-operations.js';
-import { AWS_BUCKET_NAME } from '../config/env-variables.js';
-import { s3 } from "../config/s3_file_upload-config.js";
+import ProductRepository from "../repository/products-repository.js";
+import { multipleUploader, deleteFile } from '../utils/s3-operations.js';
 
 
-const productsService = new ProductsRepository();
+const productService = new ProductRepository();
 
 // create a food product
 export const createProduct = async (req, res) => {
@@ -13,7 +10,7 @@ export const createProduct = async (req, res) => {
         multipleUploader(req, res, async ()=> {
             // create the prdoct
             const {name, price, category, description} = req.body;
-            const product = await productsService.create({name, price, category, description});
+            const product = await productService.create({name, price, category, description});
 
             // store the each image name and url
             const response = req.files; // array of uploaded files
@@ -44,7 +41,7 @@ export const createProduct = async (req, res) => {
 // get all food products
 export const getAllProducts = async (req, res) => {
     try {
-        const products = await productsService.getAll();
+        const products = await productService.getAll();
         return res.status(201).json({
             success: true,
             message: 'successfuly fetched all products',
@@ -65,7 +62,7 @@ export const getAllProducts = async (req, res) => {
 // get a specified product
 export const getProduct = async (req, res) => {
     try {
-        const product = await productsService.get(req.params.id);
+        const product = await productService.get(req.params.id);
         return res.status(201).json({
             success: true,
             message: 'successfuly fetched the products',
@@ -86,7 +83,7 @@ export const getProduct = async (req, res) => {
 // get products by Category
 export const getByCategory = async (req, res) => {
     try {
-        const product = await productsService.getByCategory(req.query.category);
+        const product = await productService.getByCategory(req.query.category);
         return res.status(201).json({
             success: true,
             message: 'successfuly fetched the products',
@@ -108,12 +105,12 @@ export const getByCategory = async (req, res) => {
 export const deleteProduct = async (req, res) => {
     try {
         // find the product by id, and delete the images from S3 bucket
-        const product = await productsService.get(req.body.id);
+        const product = await productService.get(req.body.id);
         for (let image of product.images) {
-            await s3.deleteObject({Bucket: AWS_BUCKET_NAME, Key: image}).promise();
+            await deleteFile(image);
         }
         // Delete the product from Database
-        const response = await productsService.destroy(req.body.id);
+        const response = await productService.destroy(req.body.id);
 
         return res.status(201).json({
             success: true,

@@ -1,7 +1,7 @@
 import CrudRepository from './crud-repository.js';
 import Products from '../models/products.js';
 
-class ProductsRepository extends CrudRepository {
+class ProductRepository extends CrudRepository {
     constructor() {
         super(Products);
     }
@@ -16,4 +16,4 @@ class ProductsRepository extends CrudRepository {
     }
 }
 
-export default ProductsRepository;
+export default ProductRepository;
