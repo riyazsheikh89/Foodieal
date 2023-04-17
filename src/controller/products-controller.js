@@ -1,16 +1,16 @@
-import ProductRepository from "../repository/products-repository.js";
-import { multipleUploader, deleteFile } from '../utils/s3-operations.js';
+import ProductService from "../services/product-service.js";
+import { multipleUploader } from '../utils/s3-operations.js';
 
 
-const productService = new ProductRepository();
+const productService = new ProductService();
 
 // create a food product
 export const createProduct = async (req, res) => {
     try {
         multipleUploader(req, res, async ()=> {
-            // create the prdoct
+            // create the product
             const {name, price, category, description} = req.body;
-            const product = await productService.create({name, price, category, description});
+            const product = await productService.createNewProduct({name, price, category, description});
 
             // store the each image name and url
             const response = req.files; // array of uploaded files
@@ -62,7 +62,7 @@ export const getAllProducts = async (req, res) => {
 // get a specified product
 export const getProduct = async (req, res) => {
     try {
-        const product = await productService.get(req.params.id);
+        const product = await productService.getProductById(req.params.id);
         return res.status(201).json({
             success: true,
             message: 'successfuly fetched the products',
@@ -104,14 +104,7 @@ export const getByCategory = async (req, res) => {
 // delete a product
 export const deleteProduct = async (req, res) => {
     try {
-        // find the product by id, and delete the images from S3 bucket
-        const product = await productService.get(req.body.id);
-        for (let image of product.images) {
-            await deleteFile(image);
-        }
-        // Delete the product from Database
-        const response = await productService.destroy(req.body.id);
-
+        const response = await productService.deleteById(req.body.id);
         return res.status(201).json({
             success: true,
             message: 'successfuly deleted the products',

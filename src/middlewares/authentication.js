@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import User from "../models/user.js";
+import {JWT_KEY} from '../config/env-variables.js';
 
 export const authenticate = async (req, res, next) => {
     try {
@@ -9,7 +10,7 @@ export const authenticate = async (req, res, next) => {
                 message: 'Unauthorised token access!'
             });
         }
-        const decodedData = jwt.verify(token, process.env.JWT_KEY);
+        const decodedData = jwt.verify(token, JWT_KEY);
         //attach the user to the 'res' object for using the user details inside next() middleware
         req.user = await User.findById(decodedData.id);
         next();

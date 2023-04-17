@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.post('/create', signup);
 router.post('/signin', login);
-router.get('/logout', logout);
+router.post('/logout', logout);
 router.get('/profile', authenticate, myProfile);
 
 router.post('/forgot-password', forgotPassword);
