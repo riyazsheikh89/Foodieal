@@ -1,5 +1,7 @@
+import Products from "../models/products.js";
 import ProductService from "../services/product-service.js";
 import { multipleUploader } from '../utils/s3-operations.js';
+import APIFilters from "../utils/search-filter-pagination.js";
 
 
 const productService = new ProductService();
@@ -41,7 +43,7 @@ export const createProduct = async (req, res) => {
 // get all food products
 export const getAllProducts = async (req, res) => {
     try {
-        const products = await productService.getAll();
+        const products = await productService.getAllProducts();
         return res.status(201).json({
             success: true,
             message: 'successfuly fetched all products',
@@ -118,5 +120,41 @@ export const deleteProduct = async (req, res) => {
             data: {},
             err: error
         });
+    }
+}
+
+
+// Get products by keyword, Filter and Pagination
+export const searchProducts = async (req, res) => {
+    try {
+      const resPerPage = 3; // this is variable, we can change it accordingly
+      const productsCount = await Products.countDocuments();
+
+      const apiFilters = new APIFilters(Products.find(), req.query)
+        .search()
+        .filter();
+
+      let products = await apiFilters.query;
+      const filteredProductsCount = products.length;
+
+      apiFilters.pagination(resPerPage);
+      // for executing querying more than once use .clone() 
+      products = await apiFilters.query.clone();
+
+      return res.status(201).json({
+        success: true,
+        message: "Successfully fetched products",
+        totalProducts: productsCount,
+        responsePerPage: resPerPage,
+        totalFilteredProducts: filteredProductsCount,
+        products
+      });
+    } catch (error) {
+      return res.status(201).json({
+        success: true,
+        message: "something went wrong",
+        data: {},
+        err: error,
+      });
     }
 }

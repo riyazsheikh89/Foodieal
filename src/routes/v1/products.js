@@ -5,7 +5,8 @@ import {
     getAllProducts, 
     getProduct, 
     getByCategory, 
-    deleteProduct 
+    deleteProduct,
+    searchProducts
 } from '../../controller/products-controller.js';
 import { authenticate } from '../../middlewares/authentication.js';
 import { authorization } from '../../middlewares/authorization.js';
@@ -17,8 +18,9 @@ router.post('/createProduct',authenticate,authorization, createProduct);    // c
 router.delete('/delete',authenticate,authorization, deleteProduct);         // delete a product
 
 router.get('/product/:id', getProduct);     // get a particular product by it's id
-router.get('/products', getAllProducts);    // get all products from DB
+router.get('/get-all', getAllProducts);    // get all products from DB
 router.get('/category', getByCategory);     // get products by a category
+router.get('/search-products', searchProducts);
 
 
 export default router;

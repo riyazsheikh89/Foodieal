@@ -1,5 +1,5 @@
 import ProductRepository from "../repository/products-repository.js";
-import { multipleUploader, deleteFile } from '../utils/s3-operations.js';
+import { deleteFile } from '../utils/s3-operations.js';
 
 class ProductService {
   constructor() {
@@ -45,8 +45,18 @@ class ProductService {
   // Get products by Category
   async getByCategory(filter) {
     try {
-      const products = await this.productRepository.find({ category: filter });
+      const products = await this.productRepository.getAll({ category: filter });
       return products;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // Get all products
+  async getAllProducts() {
+    try {
+      const response = await this.productRepository.getAll();
+      return response;
     } catch (error) {
       throw error;
     }
