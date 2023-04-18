@@ -21,8 +21,11 @@ class ProductService {
     try {
       // find the product by id, and delete the images from S3 bucket
       const product = await this.productRepository.get(id);
+      if (!product) {
+        throw 'Product not found!'
+      }
       for (let image of product.images) {
-        await deleteFile(image);
+        await deleteFile(image.key);
       }
       // Delete the product from Database
       const response = await this.productRepository.destroy(id);
