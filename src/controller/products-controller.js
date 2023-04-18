@@ -82,27 +82,6 @@ export const getProduct = async (req, res) => {
 }
 
 
-// get products by Category
-export const getByCategory = async (req, res) => {
-    try {
-        const product = await productService.getByCategory(req.query.category);
-        return res.status(201).json({
-            success: true,
-            message: 'successfuly fetched the products',
-            data: product,
-            err: {}
-        });
-    } catch (error) {
-        return res.status(201).json({
-            success: false,
-            message: 'something went wrong, at fetching the product!',
-            data: {},
-            err: error
-        });
-    }
-}
-
-
 // delete a product
 export const deleteProduct = async (req, res) => {
     try {
