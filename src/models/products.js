@@ -22,6 +22,9 @@ const productSchema = new mongoose.Schema({
             key: String,
             url: String
         }
+    ],
+    reviews: [
+        {type: String}
     ]
 }, ({timestamps: true}));
 
