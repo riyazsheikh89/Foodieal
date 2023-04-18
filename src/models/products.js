@@ -18,10 +18,10 @@ const productSchema = new mongoose.Schema({
         required: true
     },
     images: [
-        { type: String }
-    ],
-    urls: [
-        {type: String}
+        { 
+            key: String,
+            url: String
+        }
     ]
 }, ({timestamps: true}));
 

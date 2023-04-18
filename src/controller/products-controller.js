@@ -16,9 +16,8 @@ export const createProduct = async (req, res) => {
 
             // store the each image name and url
             const response = req.files; // array of uploaded files
-            response.forEach( element => {
-                product.images.push(element.key);
-                product.urls.push(element.location);
+            response.forEach( file => {
+                product.images.push({ key: file.key, url: file.location });
             });
             product.save();
 
