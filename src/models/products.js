@@ -25,7 +25,12 @@ const productSchema = new mongoose.Schema({
     ],
     reviews: [
         {type: String}
-    ]
+    ],
+    rating: {       // Average Rating of the product
+        type: Number,
+        min: 1,
+        max: 5
+    }
 }, ({timestamps: true}));
 
 const Products = mongoose.model('Products', productSchema);
