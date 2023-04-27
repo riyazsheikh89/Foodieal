@@ -1,9 +1,11 @@
 import ProductRepository from "../repository/products-repository.js";
+import ReviewRepository from "../repository/review-repository.js";
 import { deleteFile } from '../utils/s3-operations.js';
 
 class ProductService {
   constructor() {
     this.productRepository = new ProductRepository();
+    this.reviewRepository = new ReviewRepository();
   }
 
   // Create a new Product
@@ -19,14 +21,22 @@ class ProductService {
   // Delete a Product by ID
   async deleteById(id) {
     try {
-      // find the product by id, and delete the images from S3 bucket
+      // find the product by id
       const product = await this.productRepository.get(id);
       if (!product) {
         throw 'Product not found!'
       }
+      
+      // delete the images from S3 bucket
       for (let image of product.images) {
         await deleteFile(image.key);
       }
+
+      // delete the reviews associated with the product
+      for (let reviewId of product.reviews) {
+        await this.reviewRepository.destroy(reviewId);
+      }
+
       // Delete the product from Database
       const response = await this.productRepository.destroy(id);
       return response;
