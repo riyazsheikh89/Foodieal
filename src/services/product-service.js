@@ -48,7 +48,7 @@ class ProductService {
   // Get product by ID
   async getProductById(id) {
     try {
-      const product = await this.productRepository.get(id);
+      const product = await this.productRepository.find(id);
       return product;
     } catch (error) {
       throw error;

@@ -6,9 +6,9 @@ class ProductRepository extends CrudRepository {
         super(Products);
     }
 
-    async find(data) {
+    async find(id) {
         try {
-            const response = await Products.find(data);
+            const response = await Products.findById(id).populate('reviews');
             return response;
         } catch (error) {
             throw error;
