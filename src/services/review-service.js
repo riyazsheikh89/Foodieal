@@ -22,7 +22,7 @@ class ReviewService {
             reviewsBelongToProduct.forEach((element) => {
               totalRatings += element.rating;
             });
-            product.rating = Math.floor(totalRatings / length);
+            product.rating = Math.round(totalRatings / length);
             await product.save();
 
             return review;

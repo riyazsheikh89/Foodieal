@@ -28,8 +28,7 @@ const productSchema = new mongoose.Schema({
     ],
     rating: {       // Average Rating of the product
         type: Number,
-        min: 1,
-        max: 5
+        default: 0
     }
 }, ({timestamps: true}));
 
