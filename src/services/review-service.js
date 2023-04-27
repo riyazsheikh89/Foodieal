@@ -51,6 +51,26 @@ class ReviewService {
             throw error;
         }
     }
+
+
+    async updateById(id, content) {
+        try {
+            const updatedReview = await this.reviewRepository.update(id, {body: content});
+            return updatedReview;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+
+    async getProductAllReviews(productId) {
+        try {
+            const reviews = await this.reviewRepository.getAll({productId});
+            return reviews;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 
