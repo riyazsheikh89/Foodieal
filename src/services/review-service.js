@@ -1,6 +1,6 @@
 import ReviewRepository from "../repository/review-repository.js";
 import ProductRepository from "../repository/products-repository.js";
-import Review from "../models/Review.js";
+import Review from "../models/review.js";
 
 class ReviewService {
     constructor() {
@@ -25,6 +25,28 @@ class ReviewService {
             product.rating = Math.round(totalRatings / length);
             await product.save();
 
+            return review;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+
+    async deleteById(id) {
+        try {
+            // delete from review model
+            const review = await this.reviewRepository.destroy(id);
+            // find the product associated with the review
+            const product = await this.productRepository.get(review.productId);
+
+            // delete the review from te Product reviews array
+            for (let i=0; i<product.reviews.length; i++) {
+                if (product.reviews[i] == review._id) {
+                    product.reviews.splice(i, i);
+                    await product.save();
+                    break;
+                }
+            }
             return review;
         } catch (error) {
             throw error;
