@@ -1,6 +1,5 @@
 import ReviewRepository from "../repository/review-repository.js";
 import ProductRepository from "../repository/products-repository.js";
-import Review from "../models/review.js";
 
 class ReviewService {
     constructor() {
@@ -11,12 +10,12 @@ class ReviewService {
     async createReview(body, rating, productId, userId) {
         try {
             let product = await this.productRepository.get(productId);
-            const review = await Review.create({ body, rating, productId, userId });
+            const review = await this.reviewRepository.create({ body, rating, productId, userId });
             // Save the review _id inside reviews of Products Collection
             product.reviews.push(review._id);
 
             // calculate the avg. rating of the product and save
-            const reviewsBelongToProduct = await Review.find({ productId });
+            const reviewsBelongToProduct = await this.reviewRepository.getAll({ productId });
             const length = reviewsBelongToProduct.length;
             let totalRatings = 0;
             reviewsBelongToProduct.forEach((element) => {

@@ -8,7 +8,7 @@ export const makeReview = async (req, res) => {
             req.body.data,
             req.body.rating,
             req.body.productId,
-            req.body.userId
+            req.user.id
             );
         return res.status(500).json({
             success: true,
