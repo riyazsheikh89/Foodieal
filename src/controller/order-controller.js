@@ -42,27 +42,74 @@ export const placeOrder = async (req, res) => {
 
 // Get a single order details
 export const getOrderDetails = async (req, res) => {
-    try {
-      const order = await Order.findById(req.params.orderId).populate("user","name email");
-      // if order not found
-      if (!order) { 
-        return res.status(404).json({
-            success: false,
-            message: "Order not found with the given OrderID!"
-        })
-      }
-      return res.status(200).json({
-        success: true,
-        data: order,
-        message: "Fetched the order",
-        err: {}
-      });
-    } catch (error) {
-      return res.status(500).json({
+  try {
+    const order = await Order.findById(req.params.orderId).populate("user","name email");
+    // if order not found
+    if (!order) {
+      return res.status(404).json({
         success: false,
-        data: {},
-        message: "Something went wrong at fetching the order!",
-        err: error
+        message: "Order not found with the given OrderID!",
       });
     }
+    return res.status(200).json({
+      success: true,
+      data: order,
+      message: "Fetched the order",
+      err: {},
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      data: {},
+      message: "Something went wrong at fetching the order!",
+      err: error,
+    });
+  }
+};
+
+
+// Get all my orders
+export const getMyOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({ user: req.user.id });
+    return res.status(200).json({
+      success: true,
+      data: orders,
+      message: "Fetched all my orders",
+      err: {},
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      data: {},
+      message: "failed to get all orders",
+      err: error,
+    });
+  }
+};
+
+
+// Get all orders -- ADMIN only
+export const getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({});
+    let totalAmount = 0;
+    orders.forEach((order) => {
+      totalAmount += order.totalPrice;
+    });
+    return res.status(200).json({
+      success: true,
+      totalAmount,
+      orders,
+      message: "Successfully Fetched all orders",
+      err: {},
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      data: {},
+      message: "failed to get all orders",
+      err: error,
+    });
+  }
 }
