@@ -89,7 +89,7 @@ export const getMyOrders = async (req, res) => {
 };
 
 
-// Get all orders -- ADMIN only
+// Get all orders -- (ADMIN only)
 export const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find({});
@@ -109,6 +109,41 @@ export const getAllOrders = async (req, res) => {
       success: false,
       data: {},
       message: "failed to get all orders",
+      err: error,
+    });
+  }
+}
+
+
+// Update Order Status  -- (ADMIN only)
+export const updateOrderStatus = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.orderId);
+    if (!order) {
+      console.log('Order not found with this id');
+      throw ('Order not found with this id');
+    }
+    
+    if (order.orderStatus === 'Processing') {
+      order.orderStatus = 'Shipped';
+      await order.save();
+    } else if (order.orderStatus === 'Shipped') {
+      order.orderStatus = 'Delivered';
+      order.deliveredAt = new Date();
+      await order.save();
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: order,
+      message: "Updated order status successfully",
+      err: {},
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      data: {},
+      message: "failed to update order status",
       err: error,
     });
   }

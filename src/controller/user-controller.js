@@ -97,7 +97,7 @@ export const forgotPassword = async (req, res) => {
        const passResetToken = await userService.generateResetLink({email: req.body.email});
        // generate the url and attack the reset token to it as req.params
        const resetPasswordURL = `${req.protocol}://${req.get("host")}/api/users/reset-password/${passResetToken}`;
-       const message = `Your password reset token is : \n\n${resetPasswordURL} \n\nIf you have not made this requested, please ignore it.`;
+       const message = `Your password reset token is : \n\n${resetPasswordURL} \n\nIf you have not made this request, please ignore it.`;
 
        // send a reset link to the user, for resetting the password
        await sendMail({
